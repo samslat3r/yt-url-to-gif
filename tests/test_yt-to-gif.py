@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch, Mock, mock_open
+from unittest.mock import patch, Mock, MagicMock
 import os
 import sys
 import subprocess 
@@ -51,9 +51,9 @@ class TestYtToGif(unittest.TestCase):
     @patch('platform.system')
     def test_get_ffmpeg_path_unsupported(self, mock_system):
         mock_system.return_value = "Darwin" # Because we are not gonna support macs dawg
-        with self.asserRaises(Exception):
+        with self.asserRaises(Exception) as exc:
             get_ffmpeg_path()
-        self.assertIn("Unsupported", str(context.exception))
+        self.assertIn("Unsupported", str(exc.exception))
         
     
     ########################################################
@@ -62,40 +62,66 @@ class TestYtToGif(unittest.TestCase):
     
     @patch.object(YouTube, 'streams', autospec=True)
     @patch("pytube.YouTube.__init__", return_value=None)
-    
-    def test_download_video(self, mock_yt, mock_streams):
-        mock_stream_obj = Mock()
+    def test_download_video_success(self, mock_yt_init, mock_streams):
+        mock_stream_obj = MagicMock()
         mock_stream_obj.download.return_value = "downloaded_file.mp4"
         mock_streams.filter.return_value.get_highest_resolution.return_value = mock_stream_obj
         
-        result = download_video("https://www.youtube.com/watch?v=3veocwAhu9E")
+        result = download_video("https://youtu.be/g0X7xpuf_BY")
         self.assertEqual(result, "downloaded_file.mp4")
         mock_stream_obj.download.assert_called_once()
-            
-
+        
+    @patch.object(YouTube, 'streams', autospec=True)
+    @patch("pytube.YouTube.__init__", return_value=None)
+    def test_download_video_network_error(self, mock_yt_init, mock_streams):
+        mock_streams.filter.side_effect = Exception("Network Error")
+        with self.assertRaises(Exception) as exc:
+            download_video("https://youtu.be/g0X7xpuf_BY")
+        self.assertIn("Network Error", str(exc.exception))
+        
+    
     ########################################################
     #                   slice video tests                 #
     ########################################################
     @patch("subprocess.run")
-    @patch("yt_to_gif.get_ffmpeg_path")
-    def test_slice_video(self, mock_ffmpeg_path, mock_subprocess);
-        mock_ffmpeg_path.return_value = "/path/to/ffmpeg"
+    @patch("yt_to_gif.get_ffmpeg_path", return_value="/path/to/ffmpeg")
+    def test_slice_video_normal(self, mock_ffmpeg_path, mock_subprocess):
         input_file = "downloaded_file.mp4"
-        start_time = "1:30" # 90s
-        end_time = = "2:00" # 120
-
-        output = slice_video(input_file, start_time, end_time)
-        self.assertEqual(output, "downloaded_file_sliced.mp4")
-
-        expected_command = [
-                "/path/to/ffmpeg",
-                "-i",
-                "-vf", "fps=10,scale=640:-1:force_original_aspect_ratio=decrease",
-                "downloaded_file_sliced.mp4",
-                "-y"
-        ]
-        mock_subprocess.assert_called_once_with(expected_command, check=True) 
+        start_time = "1:10"
+        end_time = "2:00"
         
+        output = slice_video(input_file, start_time, end_time)
+        self.assertEqual((output, "downloaded_file_sliced.mp4"))
+        
+        expected_command = [
+            "/path/to/ffmpeg",
+            "-i", "downloaded_file.mp4",
+            "-ss", "70",
+            "-to", "120",
+            "-c", "copy",
+            "downloaded_file_sliced.mp4",
+            "-y"
+        ]
+        mock_subprocess.assert_called_once_with(expected_command, check=True)
+        
+    @patch("subprocess.run")
+    @patch("yt_to_gif.get_ffmpeg_path", return_value="/path/to/ffmpeg")
+    def test_slice_to_video_end_before_start(self, mock_ffmpeg_path, mock_subprocess):
+        input_file = "downloaded_file.mp4"
+        start_time = "2:00"
+        end_time = "1:10"
+        
+        slice_video(input_file, start_time, end_time)
+        expected_command = [
+            "/path/to/ffmpeg",
+            "-i", "downloaded_file.mp4",
+            "-ss", "120",
+            "-to", "70",
+            "-c", "copy",
+            "downloaded_file_sliced.mp4",
+            "-y"
+        ]
+        mock_subprocess.assert_called_once_with(expected_command, check=True)
     ########################################################
     #                  convert to gif tests                #
     ########################################################
