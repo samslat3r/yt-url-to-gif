@@ -22,7 +22,7 @@ from src import (
 
 class TestYtToGif(unittest.TestCase):
     ########################################################
-    #                   pparse_time tests                  #
+    #                   mparse_time tests                  #
     ########################################################
     def test_pase_time_valid(self):
         self.assertEqual(parse_time("1:30"), 90)
@@ -144,6 +144,19 @@ class TestYtToGif(unittest.TestCase):
         ]
         mock_subprocess.assert_called_once_with(expected_command, check=True)
 
+    ########################################################
+    #                 main() tests                         #                  
+    ########################################################
 
-    
-    
+@patch("yt_to_gif.download_video", return_value="downloaded_file.mp4")
+@patch("yt_to_gif.slice_video", return_value="downloaded_file_sliced.mp4")
+@patch("yt_to_gif.convert_to_gif", return_value="downloaded_file_slice.gif")
+@patch("sys.argv", ["yt_to_gif.py", "https://youtu.be/g0X7xpuf_BY", "1:00", "2:00"]) 
+def test_main(self, mock_gif, 
+
+
+# function name, link, begin, end
+  # https://youtu.be/g0X7xpuf_BY"
+   
+
+

@@ -42,7 +42,7 @@ def download_video(url):
     return downloaded_file
 
 def slice_video(input_file, start_time_str, end_time_str):
-    base_name, ext = os.path.splitext(input_file)
+    base_name, _ = os.path.splitext(input_file)
     sliced_file = f"{base_name}_sliced.mp4"
 
     ffmpeg_path = get_ffmpeg_path()
@@ -65,7 +65,7 @@ def slice_video(input_file, start_time_str, end_time_str):
     return sliced_file
 
 def convert_to_gif(input_file):
-    base_name, ext = os.path.splitext(input_file)
+    base_name, _ = os.path.splitext(input_file)
     output_gif= f"{base_name}.gif"
     ffmpeg_path = get_ffmpeg_path()
 
@@ -82,7 +82,7 @@ def convert_to_gif(input_file):
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Download a segment of a Youtube video and convert it to a GIF with locally packaged FFMPEG"
+        description="Download a segment of a Youtube video and cmonvert it to a GIF with locally packaged FFMPEG"
     )
     parser.add_argument("url", help="Youtube video URL.")
     parser.add_argument("start_time", help="Start time of the video slice you want in mm:ss like 1:25")
