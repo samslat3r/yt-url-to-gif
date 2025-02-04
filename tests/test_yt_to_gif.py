@@ -15,22 +15,40 @@ def temp_dir(tmp_path):
 # Unit Tests
 #------------------------------------------------
 
-@patch("src.yt_to_gif.YouTube")
-def test_download_video_mocked(mock_yt, temp_dir):
-    mock_stream = mock_yt.return_value.streams.filter.return_value.get.highest_resolution.return_value
-    mock_stream.download.return_value = str(temp_dir / "downloaded_video.mp4")
+@patch("src.yt_to_gif.YoutubeDL")
+def test_download_video_mocked(mock_ydl_class, temp_dir):
+    # mock instance is used as a context manager
+    mock_ydl_instance = mock_ydl_class.return_value.__enter__.return_value
     
-    downloaded_path = download_video("https://NOT_A_REAL_URL")
+    # mock extract_info 
+    info_dict_mock = { "title": "Not a real video", "ext": "mp4" }
+    mock_ydl_instance.extract_info.return_value = info_dict_mock
+    
+    # mock prepare_filename
+    downloaded_mp4_path = str(temp_dir / "fake_video.mp4")
+    mock_ydl_instance.prepare_filename.return_value = downloaded_mp4_path
+    
+    # Create a dummy file
+    with open(downloaded_mp4_path, 'w') as f:
+        f.write("dummy content")
+    
+    # real function call
+    downloaded_path = download_video("https://FAKE_URL")
+    
+    # assertions
     assert downloaded_path.endswith(".mp4")
-    assert os.path.exists(downloaded_path)
-
-
+    assert os.path.exists(downloaded_path), "Download function didn't even create a file" 
+    
+    mock_ydl_instance.extract_info.assert_called_once_with("https://FAKE_URL", download=True)
+    mock_ydl_instance.prepare_filename.assert_called_once_with(info_dict_mock)
+ 
+        
 
 @patch("subprocess.run")
 def test_slice_video_mocked(mock_run, temp_dir): 
-    input_file = str(temp_dir / ".mp4")
+    input_file = str(temp_dir / "test_input.mp4")
     with open(input_file, "w") as f:
-        f.write("not actually video data")
+        f.write("this really isn't video data")
         
     output_file = slice_video(input_file, "00:00", "00:10")
     assert output_file.endswith("_sliced.mp4")
