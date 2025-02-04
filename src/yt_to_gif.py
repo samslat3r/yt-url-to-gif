@@ -2,7 +2,7 @@ import argparse
 import subprocess
 import os
 import platform
-from pytube import YouTube
+from yt_dlp import YoutubeDL
 
 '''
 General Workflow:
@@ -34,9 +34,16 @@ def get_ffmpeg_path():
     return ffmpeg_binary
 
 def download_video(url):
-    yt = YouTube(url)
-    stream = yt.streams.filter(file_extension="mp4").get_highest_resolution()
-    downloaded_file = stream.download()
+    
+    ydl_opts = {
+        "format": "mp4/bestaudio/best",
+        #"outtmpl": "%(id)s.%(ext)s" unnecessary for now to change the name of the file
+    }
+    
+    with YoutubeDL(ydl_opts) as ydl:
+        info_dict = ydl.extract_info(url, download=True)
+        downloaded_file = ydl.prepare_filename(info_dict)
+        
     return downloaded_file
 
 def slice_video(input_file, start_time_str, end_time_str):
@@ -93,8 +100,12 @@ def main():
     downloaded_file = download_video(youtube_url)
     sliced_file = slice_video(downloaded_file, start_t, end_t)
     output_gif = convert_to_gif(sliced_file)
-
+    
     print(f"GIF Created and it seems good: {output_gif}")
-
+    
+    if os.path.exists(downloaded_file):
+        os.remove(downloaded_file)
+        print(f"Deleted {downloaded_file}")
+        
 if __name__ == "__main__":
     main()

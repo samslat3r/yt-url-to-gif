@@ -6,5 +6,6 @@ pluggy==1.5.0
 pyinstaller==6.11.1
 pyinstaller-hooks-contrib==2025.0
 pytest==8.3.4
-pytube==15.0.0
 setuptools==75.8.0
+yt-dlp==2025.1.26
+-e git+https://github.com/columbladee/yt-url-to-gif.git@1961e7bc4e4808627950a42d7e287d9b67d0bc2c#egg=yt_url_to_gif
