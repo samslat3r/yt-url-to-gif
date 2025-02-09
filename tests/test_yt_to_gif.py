@@ -70,10 +70,9 @@ def test_convert_to_gif_mocked(mock_run, temp_dir):
 
 @pytest.mark.integration
 def test_full_flow_integration(temp_dir):
-    
     # Download the video
     downloaded_file = download_video(TEST_VIDEO_URL)
-    assert os.path.exists(downloaded_file), "Video didn't download properly."
+    assert os.path.exists(downloaded_file), "Video didn't download prommmmmperly."
     
     # Move the video to the temp directory (just to keep things clean)
     downloaded_basename = os.path.basename(downloaded_file)

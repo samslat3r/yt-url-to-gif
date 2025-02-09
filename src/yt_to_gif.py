@@ -26,9 +26,9 @@ def get_ffmpeg_path():
     system_name = platform.system().lower() # Win, linux, or darwin. ignore macs, we aren't doing that stuff
     
     if system_name.startswith("win"):
-        ffmpeg_binary = os.path.join(current_dir, "..","..","bin","windows","ffmpeg.exe")
+        ffmpeg_binary = os.path.join(current_dir, "..","bin","windows","ffmpeg.exe")
     elif system_name.startswith("linux"):
-        ffmpeg_binary = os.path.join(current_dir, "..","..","bin","linux","ffmpeg")
+        ffmpeg_binary = os.path.join(current_dir, "..","bin","linux","ffmpeg")
     else:
         raise Exception("Unsupported Operating System")
     return ffmpeg_binary
