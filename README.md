@@ -89,7 +89,7 @@ This takes the video URL above and creates a gif beginning at 30 seconds and end
 1. **Make sure you're using the venv environment like you're using the program**: `source venv/bin/activate`
 
 2.  **Make sure you have the dependencies installed, you will need pytest**: 
-`pip install -r requirements.txt`
+This will be installed by default when you run `pip install -r requirements.txt` described above.
 
 3. Run the following:
 `python3 -m pytest -v`
