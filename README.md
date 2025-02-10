@@ -27,8 +27,8 @@ It then:
 
 ## Current Known Issues
 
-- Only AMD64 linux ffmpeg binary is included under bin/  
-- Audio only splice / empty splice download . Need to add error handling and/or more verbose error handling
+- Only AMD64 linux ffmpeg binary is included under bin/ . Windows' `ffmpeg.exe` needs to be added.
+- Audio only splice / empty splice download on some edge cases not caught by tests...  Need to add error handling and/or more verbose error handling
 
 ## Project Layout (truncated)
 
