@@ -18,7 +18,7 @@ It then:
 
 ## Features
 
-- Uses m for reliable YouTube downloads.  
+- Uses yt-dlp for reliable YouTube downloads.  
 - Allows specifying start/end times in `MM:SS`.  
 - Relies on locally packaged FFmpeg binaries under `bin/<platform>/`.  
 - Can automatically remove intermediate MP4 files after GIF creation.
