@@ -103,9 +103,13 @@ def main():
     
     print(f"GIF Created and it seems good: {output_gif}")
     
+    # Clean up temporary files
     if os.path.exists(downloaded_file):
         os.remove(downloaded_file)
         print(f"Deleted {downloaded_file}")
+    if os.path.exists(sliced_file):
+        os.remove(sliced_file)
+        print(f"Deleted {sliced_file}")
         
 if __name__ == "__main__":
     main()
