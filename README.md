@@ -27,7 +27,6 @@ It then:
 
 ## Current Known Issues
 
-- The spliced mp4 file remains in the directory where the program is run. This needs to be removed to leave only the .gif
 - Only AMD64 linux ffmpeg binary is included under bin/  
 - Audio only splice / empty splice download . Need to add error handling and/or more verbose error handling
 
